@@ -23,13 +23,20 @@ symlink() {
 
 # For all files `$name` in the present folder except `*.sh`, `README.md`, `settings.json`,
 # and `config`, backup the target file located at `~/.$name` and symlink `$name` to `~/.$name`
-for name in aliases gitconfig zprofile zshrc; do
-  if [ ! -d "$name" ]; then
+# Shell configuration
+for name in zprofile zshrc aliases; do
+  if [ ! -d "shell/$name" ]; then
     target="$HOME/.$name"
     backup $target
-    symlink $PWD/$name $target
+    symlink $PWD/shell/$name $target
   fi
 done
+
+# Git configuration
+target="$HOME/.gitconfig"
+backup $target
+symlink $PWD/git/gitconfig $target
+# git_setup.sh is just a script, no need to link it, we run it manually or it's run by user
 
 # Check for Homebrew and install if we don't have it
 CURRENT_DIR=`pwd`
@@ -94,26 +101,13 @@ if [[ `uname` =~ "Darwin" ]]; then
   echo
   if [[ "$response" =~ ^[QqYy]$ ]]; then
     echo "-----> Applying macOS defaults..."
-    ./mac_defaults.sh
+    ./macos/defaults.sh
   fi
 fi
 
 # Post-install messages
 echo "-----> ni package manager installed."
 echo "Please visit https://github.com/antfu-collective/ni to link it to your package manager."
-
-# Symlink VS Code settings and keybindings to the present `settings.json` and `keybindings.json` files
-# If it's a macOS
-if [[ `uname` =~ "Darwin" ]]; then
-  CODE_PATH=~/Library/Application\ Support/Code/User
-# Else, it's a Linux
-else
-  CODE_PATH=~/.config/Code/User
-  # If this folder doesn't exist, it's a WSL
-  if [ ! -e $CODE_PATH ]; then
-    CODE_PATH=~/.vscode-server/data/Machine
-  fi
-fi
 
 # Symlink VS Code settings and keybindings
 if [[ `uname` =~ "Darwin" ]]; then
@@ -125,14 +119,14 @@ else
   fi
 fi
 
-# Symlink settings.json (from vscode-settings.json) and keybindings.json
+# Symlink settings.json and keybindings.json
 target="$CODE_PATH/settings.json"
 backup $target
-symlink $PWD/vscode-settings.json $target
+symlink $PWD/vscode/settings.json $target
 
 target="$CODE_PATH/keybindings.json"
 backup $target
-symlink $PWD/keybindings.json $target
+symlink $PWD/vscode/keybindings.json $target
 
 # Install VS Code Extensions
 echo "-----> Installing VS Code extensions..."
