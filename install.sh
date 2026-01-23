@@ -73,26 +73,35 @@ if [ ! -d "$ZSH_PLUGINS_DIR/zsh-completions" ]; then
 fi
 cd "$CURRENT_DIR"
 
-# asdf setup
-echo "-----> Configuring asdf..."
-# Add asdf to shell for this script execution
-if [ -f "$(brew --prefix asdf)/libexec/asdf.sh" ]; then
-  . "$(brew --prefix asdf)/libexec/asdf.sh"
+# Node.js (via nvm)
+echo "-----> Configuring nvm..."
+mkdir -p ~/.nvm
+export NVM_DIR="$HOME/.nvm"
+# Source nvm from Homebrew install location
+if [ -s "/opt/homebrew/opt/nvm/nvm.sh" ]; then
+  . "/opt/homebrew/opt/nvm/nvm.sh"
+elif [ -s "/usr/local/opt/nvm/nvm.sh" ]; then
+  . "/usr/local/opt/nvm/nvm.sh"
 fi
 
-# Node.js
-if ! asdf plugin list | grep -q "nodejs"; then
-  asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+# Install latest LTS
+if command -v nvm &> /dev/null; then
+  echo "-----> Installing Node.js LTS via nvm..."
+  nvm install --lts
+  nvm alias default 'lts/*'
+  nvm use default
+else
+  echo "nvm not found. Make sure brew installed it correctly."
 fi
-asdf install nodejs latest
-asdf global nodejs latest
 
-# Python
-if ! asdf plugin list | grep -q "python"; then
-  asdf plugin add python
+# Python (via uv)
+echo "-----> Configuring Python via uv..."
+if command -v uv &> /dev/null; then
+  echo "-----> Installing latest Python via uv..."
+  uv python install
+else
+  echo "uv not found. Make sure brew installed it correctly."
 fi
-asdf install python latest
-asdf global python latest
 
 # macOS Defaults
 if [[ `uname` =~ "Darwin" ]]; then
@@ -101,6 +110,7 @@ if [[ `uname` =~ "Darwin" ]]; then
   echo
   if [[ "$response" =~ ^[QqYy]$ ]]; then
     echo "-----> Applying macOS defaults..."
+    chmod +x ./macos/defaults.sh
     ./macos/defaults.sh
   fi
 fi

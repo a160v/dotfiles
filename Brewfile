@@ -1,9 +1,8 @@
-tap "homebrew/bundle"
-tap "homebrew/cask"
+# Taps
 
 # Formulae
 brew "mole"
-brew "asdf"
+brew "nvm"
 brew "uv"
 brew "git"
 brew "gh"
