@@ -17,6 +17,12 @@ alias g="git"
 alias rr="rm -rf"
 alias mux="tmuxinator"
 
+# Modern Unix Replacements
+alias ls="eza --icons --group-directories-first"
+alias ll="eza --icons --group-directories-first -l"
+alias cat="bat"
+alias grep="rg"
+
 # Default options
 
 alias rsync="rsync -vh"
