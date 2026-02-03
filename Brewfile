@@ -2,7 +2,7 @@
 
 # Formulae
 brew "mole"
-brew "nvm"
+brew "mise"
 brew "uv"
 brew "git"
 brew "gh"
